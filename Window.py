@@ -163,5 +163,6 @@ class Window(QtWidgets.QWidget):
             wf.write("\n")
             wf.write("</PanelCommand>")
         self.adb_cmd.adb('push lcd_param_config.xml /data/')
-        self.adb_cmd.adb_shell(f'echo set_param_config:1 dsi:{self.panel.current_screen} fps:{self.panel.current_fps} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg')
+        hs_mode = 1 if self.ui.hs_mode.isChecked() else 0
+        self.adb_cmd.adb_shell(f'echo set_param_config:1 dsi:{self.panel.current_screen} fps:{self.panel.current_fps} hs_mode:{hs_mode} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg')
         MyLog.cout(self.ui.debug_window, "替换code成功")
