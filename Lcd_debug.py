@@ -4,13 +4,14 @@ import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from Panel import Panel
-from ADBMonitor import ADBMonitor
 from Window import Window
 from ADBMonitor import ADBMonitor
+from Json_process import Json_process
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     adb = ADBMonitor()
     panel = Panel()
-    win= Window(panel, adb)
+    json_pro = Json_process()
+    win= Window(panel, adb, json_pro)
     sys.exit(app.exec_())

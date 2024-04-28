@@ -1,7 +1,10 @@
+import time
+
 class MyLog:
     @staticmethod
     def cout(debug_window, out):
-        debug_window.append(str(out))
+        now = time.localtime()
+        debug_window.append(time.strftime("[%Y-%m-%d %H:%M:%S] ", now) + str(out))
         print(out)
 
     @staticmethod

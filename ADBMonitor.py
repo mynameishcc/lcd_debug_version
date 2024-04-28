@@ -28,6 +28,7 @@ class ADBMonitor(QWidget):
             MyLog.cout(self.win.ui.debug_window, "===========change current adb device to " + self.adb_device + "=============")
         self.adb_shell("mount -t debugfs none /d")
         self.win.refresh_screen_number()
+        self.win.refresh_screen_cmd_type()
 
     
     def on_adb_devices_info_change(self, text):
