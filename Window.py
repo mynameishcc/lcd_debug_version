@@ -4,6 +4,7 @@ import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtGui import QStandardItem, QStandardItemModel
 
 from Ui_UI import Ui_MainWindow
 from Panel import Panel
@@ -229,10 +230,15 @@ class Window(QtWidgets.QWidget):
             if "msm_drm.dsi_display" in cmdline:
                 self.panel.screen_num += 1
 
+        self.ui.screen_index.blockSignals(True)
+        model = QStandardItemModel()
         for i in range(self.panel.screen_num):
-            self.ui.screen_index.blockSignals(True)
-            self.ui.screen_index.addItem(f"{i}")
-            self.ui.screen_index.blockSignals(False)
+            s = f"{i}"
+            standard_item = QStandardItem(s)
+            standard_item.setToolTip(self.panel.get_panel_tips(s))  # 设置工具提示
+            model.appendRow(standard_item)
+        self.ui.screen_index.setModel(model)
+        self.ui.screen_index.blockSignals(False)
 
         self.panel.current_screen = self.ui.screen_index.currentText()
         print("current_screen" + self.ui.screen_index.currentText())

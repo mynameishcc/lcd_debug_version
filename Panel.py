@@ -25,3 +25,11 @@ class Panel(object):
         except Exception as e:
             print(e)
         return [cmd_type.strip() for cmd_type in ret if cmd_type.strip()] # 去掉末尾的'\n'
+
+    def get_panel_tips(self, index):
+        dic = {
+            "0":"内屏",
+            "1":"外屏",
+        }
+
+        return dic[index] if index in dic else "异常屏幕"
