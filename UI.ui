@@ -428,6 +428,16 @@ p, li { white-space: pre-wrap; }
      <string>开启debug日志</string>
     </property>
    </widget>
+   <widget class="QLineEdit" name="search_lineedit">
+    <property name="geometry">
+     <rect>
+      <x>792</x>
+      <y>160</y>
+      <width>121</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
    <zorder>groupBox_4</zorder>
    <zorder>groupBox_3</zorder>
    <zorder>screen_index</zorder>
@@ -445,6 +455,7 @@ p, li { white-space: pre-wrap; }
    <zorder>groupBox</zorder>
    <zorder>groupBox_2</zorder>
    <zorder>enable_debug_log_checkbox</zorder>
+   <zorder>search_lineedit</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

@@ -46,6 +46,7 @@ class Window(QtWidgets.QWidget):
         self.ui.adb_devices_Info.currentTextChanged.connect(self.adb_cmd.refresh_device_list__)
         self.ui.screen_index.currentTextChanged.connect(self.on_screen_change)
         self.ui.fps_list.currentTextChanged.connect(self.on_fps_list_info_change)
+
         self.ui.cmd_type_list.currentTextChanged.connect(self.on_cmd_type_change)
 
         self.ui.enable_debug_log_checkbox.stateChanged.connect(self.on_debug_log_level_change)
@@ -54,6 +55,8 @@ class Window(QtWidgets.QWidget):
         self.ui.sync_te.stateChanged.connect(self.on_sync_te_change)
 
         self.ui.listWidget.itemDoubleClicked.connect(self.import_json_file)
+
+        self.ui.search_lineedit.textChanged.connect(self.on_search_lineedit_change)
         self.json_pro = json_pro
         json_pro.win = self
 
@@ -82,10 +85,20 @@ class Window(QtWidgets.QWidget):
         self.ui.debug_window.clear()
 
     @MyLog.print_function_name
+    def on_search_lineedit_change(self, text):
+        self.update_ui_cmd_type_list()
+
+    def update_current_cmd_type(self, text):
+        if text != self.panel.current_cmd_type:
+            self.panel.current_cmd_type = text
+            if text:
+                MyLog.cout(self.ui.debug_window, "change current cmd type to " + text)
+            else:
+                MyLog.cout(self.ui.debug_window, "no cmd type deteced")
+
+    @MyLog.print_function_name
     def on_cmd_type_change(self, text):
-        self.panel.current_cmd_type = text
-        MyLog.cout(self.ui.debug_window, "change current cmd type to " + text)
-        print("current cmd type" + self.panel.current_cmd_type)
+        self.update_current_cmd_type(text)
         #self.refresh_screen_cmd_type()        
 
     @MyLog.print_function_name
@@ -163,23 +176,32 @@ class Window(QtWidgets.QWidget):
         combo_box.blockSignals(False)  # 恢复信号发射
 
     @MyLog.print_function_name
-    def refresh_screen_cmd_type(self):
+    def update_ui_cmd_type_list(self):
         self.clear_combo_box(self.ui.cmd_type_list)
+
+        search_word = self.ui.search_lineedit.text().strip()
+        self.ui.cmd_type_list.blockSignals(True)
+        for cmd_type in self.panel.cmd_type_list_with_index:
+            #print(search_word)
+            if not search_word or search_word in cmd_type:
+                print(cmd_type)
+                self.ui.cmd_type_list.addItem(cmd_type)
+        self.ui.cmd_type_list.blockSignals(False)
+
+        self.update_current_cmd_type(self.ui.cmd_type_list.currentText())
+
+    @MyLog.print_function_name
+    def refresh_screen_cmd_type(self):
         self.adb_cmd.adb_shell(f"cat /sys/class/graphics/fb{self.panel.current_screen}/lcdkit_cmd_type")
         self.adb_cmd.adb("pull /data/lcdkit_cmd_type.txt .")
         self.panel.cmd_type_list = self.panel.get_cmd_type_list("lcdkit_cmd_type.txt")
+        self.panel.cmd_type_list_with_index = [f"{i}:{v}" for i, v in enumerate(self.panel.cmd_type_list)]
         try:
             os.remove("lcdkit_cmd_type.txt")
         except:
             pass
 
-        for index, cmd_type in enumerate(self.panel.cmd_type_list):
-            self.ui.cmd_type_list.blockSignals(True)
-            print(cmd_type)
-            self.ui.cmd_type_list.addItem(f"{index}:{cmd_type}")
-            self.ui.cmd_type_list.blockSignals(False)
-        
-        self.panel.current_cmd_type = self.ui.cmd_type_list.currentText()
+        self.update_ui_cmd_type_list()
 
     @MyLog.print_function_name
     def refresh_screen_fps(self):
