@@ -40,6 +40,7 @@ class Window(QtWidgets.QWidget):
         self.adb_cmd = adb_cmd
         adb_cmd.win = self
         self.panel = panel
+        panel.win = self
 
         self.adb_cmd.refresh_device_list()
         self.ui.adb_devices_Info.currentTextChanged.connect(self.adb_cmd.refresh_device_list__)
@@ -47,6 +48,7 @@ class Window(QtWidgets.QWidget):
         self.ui.fps_list.currentTextChanged.connect(self.on_fps_list_info_change)
         self.ui.cmd_type_list.currentTextChanged.connect(self.on_cmd_type_change)
 
+        self.ui.enable_debug_log_checkbox.stateChanged.connect(self.on_debug_log_level_change)
         self.ui.hs_mode.stateChanged.connect(self.on_hs_speed_change)
         self.ui.code_pack.stateChanged.connect(self.on_code_pack_change)
         self.ui.sync_te.stateChanged.connect(self.on_sync_te_change)
@@ -90,6 +92,14 @@ class Window(QtWidgets.QWidget):
     def on_sync_te_change(self, state):
         if state == QtCore.Qt.Checked:
             pass
+
+    @MyLog.print_function_name
+    def on_debug_log_level_change(self, state):
+        if state == QtCore.Qt.Checked:
+            debug_level = 4
+        else:
+            debug_level = 0
+        self.adb_cmd.adb_shell(f"echo set_debug_level:{debug_level} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
 
     @MyLog.print_function_name
     def on_hs_speed_change(self, state):
@@ -158,6 +168,10 @@ class Window(QtWidgets.QWidget):
         self.adb_cmd.adb_shell(f"cat /sys/class/graphics/fb{self.panel.current_screen}/lcdkit_cmd_type")
         self.adb_cmd.adb("pull /data/lcdkit_cmd_type.txt .")
         self.panel.cmd_type_list = self.panel.get_cmd_type_list("lcdkit_cmd_type.txt")
+        try:
+            os.remove("lcdkit_cmd_type.txt")
+        except:
+            pass
 
         for index, cmd_type in enumerate(self.panel.cmd_type_list):
             self.ui.cmd_type_list.blockSignals(True)

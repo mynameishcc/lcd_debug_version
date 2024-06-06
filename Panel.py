@@ -1,3 +1,5 @@
+from MyLog import MyLog
+
 class Panel(object):
     def __init__(self):
         self.screen_num : int = 0
@@ -16,7 +18,10 @@ class Panel(object):
         return []
     
     def get_cmd_type_list(self, file):
-        ret = ''
-        with open(file, 'r') as rf:
-            ret = rf.readlines()
+        ret = []
+        try:
+            with open(file, 'r') as rf:
+                ret = rf.readlines()
+        except Exception as e:
+            print(e)
         return [cmd_type.strip() for cmd_type in ret if cmd_type.strip()] # 去掉末尾的'\n'

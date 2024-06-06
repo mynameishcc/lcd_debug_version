@@ -29,7 +29,6 @@ class ADBMonitor(QWidget):
         self.adb_shell("mount -t debugfs none /d")
         self.win.refresh_screen_number()
         self.win.refresh_screen_cmd_type()
-
     
     def on_adb_devices_info_change(self, text):
         self.refresh_device_list__(text)
