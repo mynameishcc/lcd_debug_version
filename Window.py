@@ -11,6 +11,7 @@ from Panel import Panel
 from ADBMonitor import ADBMonitor
 from MyLog import MyLog
 from Json_process import Json_process
+from parseCode import lines2codes
 
 class CustomOutput:
     def __init__(self, stdout, text_widget):
@@ -36,6 +37,7 @@ class Window(QtWidgets.QWidget):
         self.ui.import_file_button.clicked.connect(self.import_json_file)
         self.ui.json_to_code_button.clicked.connect(self.json_to_code)
         self.ui.open_dir_button.clicked.connect(self.open_dir)
+        self.ui.transform_code.clicked.connect(self.transform_code)
         #self.redirect_stdout()
 
         self.adb_cmd = adb_cmd
@@ -64,6 +66,11 @@ class Window(QtWidgets.QWidget):
         json_pro.json_file_init()
 
         self.MainWindow.show()
+
+    def transform_code(self):
+        text = self.ui.r_code.toPlainText()
+        text = text.split('\n')
+        MyLog.cout(self.ui.debug_window, '\n' + lines2codes(text))
 
     def open_dir(self):
         # 弹出文件夹选择对话框

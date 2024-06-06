@@ -209,13 +209,29 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>750</x>
-       <y>20</y>
+       <y>40</y>
        <width>93</width>
        <height>28</height>
       </rect>
      </property>
      <property name="text">
       <string>清空</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="get_code_Button">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>90</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>获取code</string>
      </property>
     </widget>
    </widget>
@@ -248,33 +264,30 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>750</x>
-       <y>70</y>
-       <width>93</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>获取code</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="replace_code">
      <property name="geometry">
       <rect>
        <x>750</x>
-       <y>140</y>
+       <y>90</y>
        <width>93</width>
        <height>28</height>
       </rect>
      </property>
      <property name="text">
       <string>替换code</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="transform_code">
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>40</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>转换code</string>
      </property>
     </widget>
    </widget>
