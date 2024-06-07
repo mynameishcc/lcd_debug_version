@@ -432,7 +432,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>20</y>
+      <y>70</y>
       <width>131</width>
       <height>19</height>
      </rect>
@@ -450,6 +450,47 @@ p, li { white-space: pre-wrap; }
       <height>21</height>
      </rect>
     </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>20</y>
+      <width>151</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>all cmd type state</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="all_cmd_type_state">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>20</y>
+      <width>87</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="currentText">
+     <string>关</string>
+    </property>
+    <item>
+     <property name="text">
+      <string>关</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>lp_mode</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>hs_mode</string>
+     </property>
+    </item>
    </widget>
    <zorder>groupBox_4</zorder>
    <zorder>groupBox_3</zorder>
@@ -469,6 +510,8 @@ p, li { white-space: pre-wrap; }
    <zorder>groupBox_2</zorder>
    <zorder>enable_debug_log_checkbox</zorder>
    <zorder>search_lineedit</zorder>
+   <zorder>label_4</zorder>
+   <zorder>all_cmd_type_state</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

@@ -38,6 +38,7 @@ class Window(QtWidgets.QWidget):
         self.ui.json_to_code_button.clicked.connect(self.json_to_code)
         self.ui.open_dir_button.clicked.connect(self.open_dir)
         self.ui.transform_code.clicked.connect(self.transform_code)
+        self.ui.get_code_Button.clicked.connect(self.get_code)
         #self.redirect_stdout()
 
         self.adb_cmd = adb_cmd
@@ -191,7 +192,7 @@ class Window(QtWidgets.QWidget):
         self.ui.cmd_type_list.blockSignals(True)
         for cmd_type in self.panel.cmd_type_list_with_index:
             #print(search_word)
-            if not search_word or search_word in cmd_type:
+            if not search_word or search_word.lower() in cmd_type.lower():
                 print(cmd_type)
                 self.ui.cmd_type_list.addItem(cmd_type)
         self.ui.cmd_type_list.blockSignals(False)
@@ -266,6 +267,31 @@ class Window(QtWidgets.QWidget):
         self.replace_code_(r_code, self.panel.current_screen, self.panel.current_fps, type_index, hs_mode)
 
         self.json_pro.update(r_code)
+
+    def get_code(self):
+        type_index = int(self.panel.current_cmd_type.split(':')[0])
+        screen = self.panel.current_screen
+        fps = self.panel.current_fps
+
+        self.adb_cmd.adb_shell(f"echo get_cmd:{type_index} dsi:{screen} fps:{fps} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
+        self.adb_cmd.adb("pull /data/lcdkit_code.txt .")
+        self.adb_cmd.adb_shell("rm -rf /data/lcdkit_code.txt")
+
+        try:
+            with open("lcdkit_code.txt", 'r') as rf:
+                code = rf.readlines()
+                code = ''.join(code)
+                MyLog.cout(self.ui.debug_window, '\n' + code)
+            # self.ui.debug_window.append("\n")
+            # for line in code:
+            #     self.ui.debug_window.append(line)
+        except:
+            MyLog.cout(self.ui.debug_window, "get code failed")
+        try:
+            os.remove("lcdkit_code.txt")
+        except:
+            pass
+
 
     def replace_code_(self, code, screen, fps, type_index, hs_mode):
         with open('lcd_param_config.xml', 'w') as wf:
