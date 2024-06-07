@@ -50,8 +50,8 @@ class Window(QtWidgets.QWidget):
         self.ui.adb_devices_Info.currentTextChanged.connect(self.adb_cmd.refresh_device_list__)
         self.ui.screen_index.currentTextChanged.connect(self.on_screen_change)
         self.ui.fps_list.currentTextChanged.connect(self.on_fps_list_info_change)
-
         self.ui.cmd_type_list.currentTextChanged.connect(self.on_cmd_type_change)
+        self.ui.all_cmd_type_state.currentTextChanged.connect(self.on_all_cmd_type_state_change)
 
         self.ui.enable_debug_log_checkbox.stateChanged.connect(self.on_debug_log_level_change)
         self.ui.hs_mode.stateChanged.connect(self.on_hs_speed_change)
@@ -104,6 +104,10 @@ class Window(QtWidgets.QWidget):
                 MyLog.cout(self.ui.debug_window, "change current cmd type to " + text)
             else:
                 MyLog.cout(self.ui.debug_window, "no cmd type deteced")
+
+    def on_all_cmd_type_state_change(self, text):
+        MyLog.cout(self.ui.debug_window, f"set all cmd type state to {text}")
+        self.adb_cmd.adb_shell(f"echo set_all_cmd_type_state:{text} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
 
     @MyLog.print_function_name
     def on_cmd_type_change(self, text):

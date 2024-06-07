@@ -474,11 +474,11 @@ p, li { white-space: pre-wrap; }
      </rect>
     </property>
     <property name="currentText">
-     <string>关</string>
+     <string>off</string>
     </property>
     <item>
      <property name="text">
-      <string>关</string>
+      <string>off</string>
      </property>
     </item>
     <item>
