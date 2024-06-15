@@ -39,6 +39,8 @@ class Window(QtWidgets.QWidget):
         self.ui.open_dir_button.clicked.connect(self.open_dir)
         self.ui.transform_code.clicked.connect(self.transform_code)
         self.ui.get_code_Button.clicked.connect(self.get_code)
+        self.ui.dump_code_enable.clicked.connect(self.dump_code_enable)
+        self.ui.dump_code_disable.clicked.connect(self.dump_code_disable)
         #self.redirect_stdout()
 
         self.adb_cmd = adb_cmd
@@ -67,6 +69,22 @@ class Window(QtWidgets.QWidget):
         json_pro.json_file_init()
 
         self.MainWindow.show()
+
+    def dump_code_enable_(self, enable):
+        if enable and not self.ui.enable_debug_log_checkbox.isChecked():
+            MyLog.cout(self.ui.debug_window, 'warning: please check "开启debug日志"')
+        if self.panel.current_cmd_type:
+            type_index = int(self.panel.current_cmd_type.split(':')[0])
+            self.adb_cmd.adb_shell(f"echo dump_cmd_type:{type_index} enable:{enable} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
+            MyLog.cout(self.ui.debug_window, f'{"enable" if enable else "disable"} {self.panel.current_cmd_type}')
+        else:
+            MyLog.cout(self.ui.debug_window, 'cmd type error')
+
+    def dump_code_enable(self):
+        self.dump_code_enable_(True)
+
+    def dump_code_disable(self):
+        self.dump_code_enable_(False)
 
     def transform_code(self):
         text = self.ui.r_code.toPlainText()

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1902</width>
-    <height>954</height>
+    <width>1920</width>
+    <height>1080</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -61,29 +61,6 @@
     </property>
     <property name="text">
      <string>帧率</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_3">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>150</y>
-      <width>81</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>cmd type</string>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="cmd_type_list">
-    <property name="geometry">
-     <rect>
-      <x>150</x>
-      <y>160</y>
-      <width>631</width>
-      <height>22</height>
-     </rect>
     </property>
    </widget>
    <widget class="QCheckBox" name="hs_mode">
@@ -180,7 +157,7 @@
     <property name="geometry">
      <rect>
       <x>50</x>
-      <y>520</y>
+      <y>580</y>
       <width>861</width>
       <height>371</height>
      </rect>
@@ -239,9 +216,9 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>50</x>
-      <y>200</y>
+      <y>260</y>
       <width>861</width>
-      <height>301</height>
+      <height>311</height>
      </rect>
     </property>
     <property name="title">
@@ -253,7 +230,7 @@ p, li { white-space: pre-wrap; }
        <x>10</x>
        <y>20</y>
        <width>721</width>
-       <height>261</height>
+       <height>281</height>
       </rect>
      </property>
      <property name="html">
@@ -360,9 +337,9 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>920</x>
-      <y>460</y>
+      <y>450</y>
       <width>971</width>
-      <height>431</height>
+      <height>501</height>
      </rect>
     </property>
     <property name="title">
@@ -374,7 +351,7 @@ p, li { white-space: pre-wrap; }
        <x>10</x>
        <y>20</y>
        <width>831</width>
-       <height>401</height>
+       <height>471</height>
       </rect>
      </property>
      <property name="html">
@@ -441,16 +418,6 @@ p, li { white-space: pre-wrap; }
      <string>开启debug日志</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="search_lineedit">
-    <property name="geometry">
-     <rect>
-      <x>792</x>
-      <y>160</y>
-      <width>121</width>
-      <height>21</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
@@ -492,14 +459,192 @@ p, li { white-space: pre-wrap; }
      </property>
     </item>
    </widget>
+   <widget class="QGroupBox" name="groupBox_5">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>970</y>
+      <width>461</width>
+      <height>121</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>mipi config</string>
+    </property>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>151</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>mipi clockrate</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>50</y>
+       <width>151</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>transfer time</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>80</y>
+       <width>151</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>phy timming</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>20</y>
+       <width>141</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_2">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>50</y>
+       <width>141</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_3">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>80</y>
+       <width>141</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="clear_debug_window_2">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>20</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>设置</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="clear_debug_window_3">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>70</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>adb reboot</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_6">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>150</y>
+      <width>861</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>cmd type</string>
+    </property>
+    <widget class="QComboBox" name="cmd_type_list">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>20</y>
+       <width>631</width>
+       <height>22</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="search_lineedit">
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>20</y>
+       <width>91</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>201</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>dump code in kernel log</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="dump_code_enable">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>60</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>enable</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="dump_code_disable">
+     <property name="geometry">
+      <rect>
+       <x>320</x>
+       <y>60</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>disable</string>
+     </property>
+    </widget>
+   </widget>
    <zorder>groupBox_4</zorder>
    <zorder>groupBox_3</zorder>
    <zorder>screen_index</zorder>
    <zorder>fps_list</zorder>
    <zorder>label</zorder>
    <zorder>label_2</zorder>
-   <zorder>label_3</zorder>
-   <zorder>cmd_type_list</zorder>
    <zorder>hs_mode</zorder>
    <zorder>code_pack</zorder>
    <zorder>sync_te</zorder>
@@ -509,16 +654,17 @@ p, li { white-space: pre-wrap; }
    <zorder>groupBox</zorder>
    <zorder>groupBox_2</zorder>
    <zorder>enable_debug_log_checkbox</zorder>
-   <zorder>search_lineedit</zorder>
    <zorder>label_4</zorder>
    <zorder>all_cmd_type_state</zorder>
+   <zorder>groupBox_5</zorder>
+   <zorder>groupBox_6</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1902</width>
+     <width>1920</width>
      <height>26</height>
     </rect>
    </property>
