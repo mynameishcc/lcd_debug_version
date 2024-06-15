@@ -15,3 +15,5 @@ if __name__ == '__main__':
     json_pro = Json_process()
     win= Window(panel, adb, json_pro)
     sys.exit(app.exec_())
+
+# package: pyinstaller --onefile --windowed --noconsole .\Lcd_debug.py

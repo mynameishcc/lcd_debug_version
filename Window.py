@@ -51,7 +51,6 @@ class Window(QtWidgets.QWidget):
         self.panel = panel
         panel.win = self
 
-        self.adb_cmd.refresh_device_list()
         self.ui.adb_devices_Info.currentTextChanged.connect(self.adb_cmd.refresh_device_list__)
         self.ui.screen_index.currentTextChanged.connect(self.on_screen_change)
         self.ui.fps_list.currentTextChanged.connect(self.on_fps_list_info_change)

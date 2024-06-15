@@ -1,22 +1,47 @@
-import sys
 import subprocess as subpro
 
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QThread, pyqtSignal
 
 from MyLog import MyLog, logger
+
+class ADBMonitorThread(QThread):
+    devices_changed = pyqtSignal(list)
+
+    def __init__(self):
+        super().__init__()
+        self.running = True
+
+    def run(self):
+        while self.running:
+            devices = self.get_adb_devices()
+            self.devices_changed.emit(devices)
+            self.sleep(3)
+
+    def get_adb_devices(self):
+        result = subpro.run(['adb', 'devices'], stdout=subpro.PIPE, stderr=subpro.PIPE, text=True, creationflags=subpro.CREATE_NO_WINDOW)
+        lines = result.stdout.splitlines()
+        devices = []
+        for line in lines[1:]:  # 跳过第一行，它通常是"List of devices attached"
+            if "\tdevice" in line:
+                device_id = line.split("\t")[0]
+                devices.append(device_id)
+        return devices
+
+    def stop(self):
+        self.running = False
+        self.wait()
 
 class ADBMonitor(QWidget):
     def __init__(self):
         super().__init__()
         self.adb_device = ''
-        #self.win : Window = None
         self.current_devices = []
 
-        self.timer = QTimer(self)
-        self.timer.setInterval(3000)  # 每s秒检查一次
-        self.timer.timeout.connect(self.refresh_device_list)
-        self.timer.start()
+        #启动后台线程
+        self.monitor_thread = ADBMonitorThread()
+        self.monitor_thread.devices_changed.connect(self.on_adb_devices_info_change)
+        self.monitor_thread.start()
 
         self.win = None
     
@@ -30,8 +55,8 @@ class ADBMonitor(QWidget):
         self.win.refresh_screen_number()
         self.win.refresh_screen_cmd_type()
     
-    def on_adb_devices_info_change(self, text):
-        self.refresh_device_list__(text)
+    def on_adb_devices_info_change(self, devices):
+        self.refresh_device_list(devices)
 
     @MyLog.print_function_name
     def refresh_device_list_(self, devices):
@@ -46,8 +71,7 @@ class ADBMonitor(QWidget):
         
         self.refresh_device_list__(self.win.ui.adb_devices_Info.currentText())
 
-    def refresh_device_list(self):
-        devices = self.get_adb_devices()
+    def refresh_device_list(self, devices):
         if devices != self.current_devices:
             logger.info(devices)
             self.current_devices = devices
@@ -60,13 +84,3 @@ class ADBMonitor(QWidget):
     
     def adb(self, cmd):
         return subpro.getoutput(f'adb -s {self.adb_device} {cmd}')
-    
-    def get_adb_devices(self):
-        result = subpro.run(['adb', 'devices'], stdout=subpro.PIPE, stderr=subpro.PIPE, text=True)
-        lines = result.stdout.splitlines()
-        devices = []
-        for line in lines[1:]:  # 跳过第一行，它通常是"List of devices attached"
-            if "\tdevice" in line:
-                device_id = line.split("\t")[0]
-                devices.append(device_id)
-        return devices
