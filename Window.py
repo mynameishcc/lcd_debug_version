@@ -27,6 +27,9 @@ class CustomOutput:
 class Window(QtWidgets.QWidget):
     def __init__(self, panel: Panel, adb_cmd: ADBMonitor, json_pro: Json_process):
         super().__init__()
+
+        logger.info('\n\n\nstart init')
+
         self.MainWindow = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.MainWindow)
@@ -67,6 +70,8 @@ class Window(QtWidgets.QWidget):
         json_pro.win = self
 
         json_pro.json_file_init()
+
+        logger.info('end init\n')
 
         self.MainWindow.show()
 
@@ -229,8 +234,8 @@ class Window(QtWidgets.QWidget):
         self.panel.cmd_type_list_with_index = [f"{i}:{v}" for i, v in enumerate(self.panel.cmd_type_list)]
         try:
             os.remove("lcdkit_cmd_type.txt")
-        except:
-            pass
+        except Exception as e:
+            logger.exception(e)
 
         self.update_ui_cmd_type_list()
 
@@ -307,12 +312,13 @@ class Window(QtWidgets.QWidget):
             # self.ui.debug_window.append("\n")
             # for line in code:
             #     self.ui.debug_window.append(line)
-        except:
+        except Exception as e:
             MyLog.cout(self.ui.debug_window, "get code failed")
+            logger.exception(e)
         try:
             os.remove("lcdkit_code.txt")
-        except:
-            pass
+        except Exception as e:
+            logger.exception(e)
 
 
     def replace_code_(self, code, screen, fps, type_index, hs_mode):

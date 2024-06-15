@@ -1,7 +1,7 @@
 #coding = 'utf-8'
 import sys
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 
 from Panel import Panel
 from Window import Window

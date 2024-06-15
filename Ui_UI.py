@@ -123,6 +123,7 @@ class Ui_MainWindow(object):
         self.all_cmd_type_state.addItem("")
         self.all_cmd_type_state.addItem("")
         self.groupBox_5 = QtWidgets.QGroupBox(self.centralwidget)
+        self.groupBox_5.setEnabled(False)
         self.groupBox_5.setGeometry(QtCore.QRect(610, 970, 461, 121))
         self.groupBox_5.setObjectName("groupBox_5")
         self.label_5 = QtWidgets.QLabel(self.groupBox_5)

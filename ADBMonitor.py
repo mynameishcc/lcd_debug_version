@@ -48,8 +48,8 @@ class ADBMonitor(QWidget):
 
     def refresh_device_list(self):
         devices = self.get_adb_devices()
-        logger.info(devices)
         if devices != self.current_devices:
+            logger.info(devices)
             self.current_devices = devices
             self.refresh_device_list_(devices)
 
