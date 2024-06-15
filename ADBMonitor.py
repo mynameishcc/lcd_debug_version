@@ -4,7 +4,7 @@ import subprocess as subpro
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel
 from PyQt5.QtCore import QTimer
 
-from MyLog import MyLog
+from MyLog import MyLog, logger
 
 class ADBMonitor(QWidget):
     def __init__(self):
@@ -22,7 +22,7 @@ class ADBMonitor(QWidget):
     
     @MyLog.print_function_name
     def refresh_device_list__(self, text):
-        print(self.adb_device)
+        logger.info(self.adb_device)
         self.adb_device = text
         if self.adb_device:
             MyLog.cout(self.win.ui.debug_window, "===========change current adb device to " + self.adb_device + "=============")
@@ -48,14 +48,14 @@ class ADBMonitor(QWidget):
 
     def refresh_device_list(self):
         devices = self.get_adb_devices()
-        print(devices)
+        logger.info(devices)
         if devices != self.current_devices:
             self.current_devices = devices
             self.refresh_device_list_(devices)
 
     def adb_shell(self, cmd):
         str = f'adb -s {self.adb_device} shell  "{cmd}"'
-        print(str)
+        logger.info(str)
         return subpro.getoutput(str)
     
     def adb(self, cmd):

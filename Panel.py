@@ -1,4 +1,4 @@
-from MyLog import MyLog
+from MyLog import MyLog, logger
 
 class Panel(object):
     def __init__(self):
@@ -23,7 +23,7 @@ class Panel(object):
             with open(file, 'r') as rf:
                 ret = rf.readlines()
         except Exception as e:
-            print(e)
+            logger.error(e)
         return [cmd_type.strip() for cmd_type in ret if cmd_type.strip()] # 去掉末尾的'\n'
 
     def get_panel_tips(self, index):

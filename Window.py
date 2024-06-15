@@ -9,7 +9,7 @@ from PyQt5.QtGui import QStandardItem, QStandardItemModel
 from Ui_UI import Ui_MainWindow
 from Panel import Panel
 from ADBMonitor import ADBMonitor
-from MyLog import MyLog
+from MyLog import MyLog, logger
 from Json_process import Json_process
 from parseCode import lines2codes
 
@@ -163,10 +163,10 @@ class Window(QtWidgets.QWidget):
                     j = int(j, base=16)
                     if code_pack_flag and line_index != len(text) - 1:
                         j |= 0x40
-                        print(j)
+                        logger.info(j)
                     elif not code_pack_flag:
                         j &= ~0x40
-                        print(j)
+                        logger.info(j)
                     # if sync_te_flag and :
                     #     j |= 0x20
                     # else:
@@ -192,7 +192,7 @@ class Window(QtWidgets.QWidget):
     def on_screen_change(self, text):
         self.panel.current_screen = text
         MyLog.cout(self.ui.debug_window, "change current screen to " + text)
-        print("current_screen" + self.panel.current_screen)
+        logger.info("current_screen" + self.panel.current_screen)
         self.refresh_screen_fps()
 
     @MyLog.print_function_name
@@ -215,7 +215,7 @@ class Window(QtWidgets.QWidget):
         for cmd_type in self.panel.cmd_type_list_with_index:
             #print(search_word)
             if not search_word or search_word.lower() in cmd_type.lower():
-                print(cmd_type)
+                logger.info(cmd_type)
                 self.ui.cmd_type_list.addItem(cmd_type)
         self.ui.cmd_type_list.blockSignals(False)
 
@@ -249,7 +249,7 @@ class Window(QtWidgets.QWidget):
 
     @MyLog.print_function_name
     def refresh_screen_number(self):
-        print("The function ============", inspect.currentframe().f_code.co_name, "====================")
+        #logger.info("The function ============", inspect.currentframe().f_code.co_name, "====================")
         self.panel.screen_num = 0
         self.clear_combo_box(self.ui.screen_index)
 
@@ -271,7 +271,7 @@ class Window(QtWidgets.QWidget):
         self.ui.screen_index.blockSignals(False)
 
         self.panel.current_screen = self.ui.screen_index.currentText()
-        print("current_screen" + self.ui.screen_index.currentText())
+        logger.info("current_screen" + self.ui.screen_index.currentText())
 
         self.refresh_screen_fps()
 
