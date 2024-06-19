@@ -5,6 +5,7 @@ class Panel(object):
         self.screen_num : int = 0
         self.current_screen : str = '0'
         self.current_fps : str = ''
+        self.fps_list : list = []
         self.current_cmd_type : str = ''
         self.cmd_type_list = ''
 
@@ -33,3 +34,23 @@ class Panel(object):
         }
 
         return dic[index] if index in dic else "异常屏幕"
+
+    def get_real_fps(self, ret): # current_fps:120;default_fps:60;support_fps_list:60,120,10,1,90,40,30;current_index:1
+        ret = ret.split(';')
+        for i in ret:
+            if 'current_fps' in i:
+                return i.split(':')[1]
+
+
+    def get_real_screen(self, ret):
+        return ret.split(':')[1].strip() #panel_index:0 means内屏亮，1 means 外屏亮，2 means双屏同显，3 means都不亮
+    
+    def translate(self, screen):
+        if screen == "0":
+            return "内屏"
+        elif screen == "1":
+            return "外屏"
+        elif screen == "2":
+            return "双屏同显"
+        elif screen == "3":
+            return "灭屏"

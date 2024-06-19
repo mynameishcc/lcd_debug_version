@@ -207,6 +207,9 @@ p, li { white-space: pre-wrap; }
        <height>28</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>获取手机实时的code，可验证code是否替换成功</string>
+     </property>
      <property name="text">
       <string>获取code</string>
      </property>
@@ -265,6 +268,41 @@ p, li { white-space: pre-wrap; }
      </property>
      <property name="text">
       <string>转换code</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="restore_code">
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>140</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>还原单个code</string>
+     </property>
+     <property name="text">
+      <string>还原code</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="restore_all_code">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>190</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>一键还原所有的code</string>
+     </property>
+     <property name="text">
+      <string>一键还原</string>
      </property>
     </widget>
    </widget>
@@ -379,7 +417,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>860</x>
-       <y>140</y>
+       <y>180</y>
        <width>93</width>
        <height>28</height>
       </rect>
@@ -395,13 +433,32 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>860</x>
-       <y>200</y>
+       <y>230</y>
        <width>93</width>
        <height>28</height>
       </rect>
      </property>
      <property name="text">
       <string>文件另存为</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="restore_code_in_json">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>860</x>
+       <y>130</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>一键还原所有的code</string>
+     </property>
+     <property name="text">
+      <string>一键还原</string>
      </property>
     </widget>
    </widget>
@@ -458,117 +515,6 @@ p, li { white-space: pre-wrap; }
       <string>hs_mode</string>
      </property>
     </item>
-   </widget>
-   <widget class="QGroupBox" name="groupBox_5">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>610</x>
-      <y>970</y>
-      <width>461</width>
-      <height>121</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>mipi config</string>
-    </property>
-    <widget class="QLabel" name="label_5">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>20</y>
-       <width>151</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>mipi clockrate</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_7">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>50</y>
-       <width>151</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>transfer time</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_8">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>80</y>
-       <width>151</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>phy timming</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="lineEdit">
-     <property name="geometry">
-      <rect>
-       <x>160</x>
-       <y>20</y>
-       <width>141</width>
-       <height>21</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="lineEdit_2">
-     <property name="geometry">
-      <rect>
-       <x>160</x>
-       <y>50</y>
-       <width>141</width>
-       <height>21</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="lineEdit_3">
-     <property name="geometry">
-      <rect>
-       <x>160</x>
-       <y>80</y>
-       <width>141</width>
-       <height>21</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="clear_debug_window_2">
-     <property name="geometry">
-      <rect>
-       <x>350</x>
-       <y>20</y>
-       <width>93</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>设置</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="clear_debug_window_3">
-     <property name="geometry">
-      <rect>
-       <x>350</x>
-       <y>70</y>
-       <width>93</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>adb reboot</string>
-     </property>
-    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_6">
     <property name="geometry">
@@ -659,7 +605,6 @@ p, li { white-space: pre-wrap; }
    <zorder>enable_debug_log_checkbox</zorder>
    <zorder>label_4</zorder>
    <zorder>all_cmd_type_state</zorder>
-   <zorder>groupBox_5</zorder>
    <zorder>groupBox_6</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">

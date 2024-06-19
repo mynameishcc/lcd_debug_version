@@ -44,6 +44,8 @@ class Window(QtWidgets.QWidget):
         self.ui.get_code_Button.clicked.connect(self.get_code)
         self.ui.dump_code_enable.clicked.connect(self.dump_code_enable)
         self.ui.dump_code_disable.clicked.connect(self.dump_code_disable)
+        self.ui.restore_code.clicked.connect(self.restore_code)
+        self.ui.restore_all_code.clicked.connect(self.restore_all_code)
         #self.redirect_stdout()
 
         self.adb_cmd = adb_cmd
@@ -85,10 +87,10 @@ class Window(QtWidgets.QWidget):
             MyLog.cout(self.ui.debug_window, 'cmd type error')
 
     def dump_code_enable(self):
-        self.dump_code_enable_(True)
+        self.dump_code_enable_(1)
 
     def dump_code_disable(self):
-        self.dump_code_enable_(False)
+        self.dump_code_enable_(0)
 
     def transform_code(self):
         text = self.ui.r_code.toPlainText()
@@ -202,7 +204,7 @@ class Window(QtWidgets.QWidget):
     @MyLog.print_function_name
     def on_fps_list_info_change(self, text):
         self.panel.current_fps = text
-        MyLog.cout(self.ui.debug_window, "change current fps to " + text + "line"+ str(inspect.currentframe().f_back.f_lineno))
+        MyLog.cout(self.ui.debug_window, "change current fps to " + text)
 
     @MyLog.print_function_name
     def clear_combo_box(self, combo_box):
@@ -238,13 +240,28 @@ class Window(QtWidgets.QWidget):
 
         self.update_ui_cmd_type_list()
 
+    def check_panel_state(self):
+        ret = self.adb_cmd.adb_shell(f"cat /sys/class/graphics/fb0/lcd_display_type")
+        real_screen = self.panel.get_real_screen(ret)
+        print(type(real_screen), type(self.panel.current_screen))
+        if (real_screen != self.panel.current_screen):
+            MyLog.cout(self.ui.debug_window, "[warning]:" + f"real screen state is {self.panel.translate(real_screen)}," +\
+                       f" but config screen is {self.panel.translate(self.panel.current_screen)}")
+            return
+        ret = self.adb_cmd.adb_shell(f"cat /sys/class/graphics/fb{self.panel.current_screen}/lcd_fps_scence")
+        real_fps = self.panel.get_real_fps(ret)
+        print(type(real_fps), type(self.panel.current_fps))
+        if real_fps != self.panel.current_fps:
+            MyLog.cout(self.ui.debug_window, "[warning]:" + f"real fps is {real_fps}," + f" but config fps is {self.panel.current_fps}")
+            return
+
     @MyLog.print_function_name
     def refresh_screen_fps(self):
         self.clear_combo_box(self.ui.fps_list)
         ret = self.adb_cmd.adb_shell(f"cat /sys/class/graphics/fb{self.panel.current_screen}/lcd_fps_scence")
-        fps_list = self.panel.get_fps_list(ret)
+        self.panel.fps_list = self.panel.get_fps_list(ret)
 
-        for fps in fps_list:
+        for fps in self.panel.fps_list:
             self.ui.fps_list.blockSignals(True)
             self.ui.fps_list.addItem(fps)
             self.ui.fps_list.blockSignals(False)
@@ -286,6 +303,7 @@ class Window(QtWidgets.QWidget):
 
     @MyLog.print_function_name
     def replace_code(self, *args, **kwargs):
+        self.check_panel_state()
         r_code = self.ui.r_code.toPlainText()
         hs_mode = 1 if self.ui.hs_mode.isChecked() else 0
         type_index = int(self.panel.current_cmd_type.split(':')[0])
@@ -295,6 +313,7 @@ class Window(QtWidgets.QWidget):
         self.json_pro.update(r_code)
 
     def get_code(self):
+        self.check_panel_state()
         type_index = int(self.panel.current_cmd_type.split(':')[0])
         screen = self.panel.current_screen
         fps = self.panel.current_fps
@@ -314,11 +333,10 @@ class Window(QtWidgets.QWidget):
         except Exception as e:
             MyLog.cout(self.ui.debug_window, "get code failed")
             logger.exception(e)
-        try:
-            os.remove("lcdkit_code.txt")
-        except Exception as e:
-            logger.exception(e)
-
+        # try:
+        #     os.remove("lcdkit_code.txt")
+        # except Exception as e:
+        #     logger.exception(e)
 
     def replace_code_(self, code, screen, fps, type_index, hs_mode):
         with open('lcd_param_config.xml', 'w') as wf:
@@ -328,7 +346,10 @@ class Window(QtWidgets.QWidget):
             wf.write("</PanelCommand>")
         self.adb_cmd.adb('push lcd_param_config.xml /data/')
         self.adb_cmd.adb_shell(f'echo set_param_config:{type_index} dsi:{screen} fps:{fps} hs_mode:{hs_mode} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg')
-        MyLog.cout(self.ui.debug_window, f"cmd type: {type_index} dsi:{screen} fps:{fps} hs_mode:{hs_mode} replace code successfully")
+        MyLog.cout(self.ui.debug_window, f"replace cmd type: {type_index} dsi:{screen} fps:{fps} hs_mode:{hs_mode}")
+        ret = self.adb_cmd.adb_get_result()
+        if ret.strip():
+            MyLog.cout(self.ui.debug_window, ret)
         #print(self.panel.cmd_type_list[type_index])
         if self.panel.cmd_type_list[type_index] == "qcom,mdss-dsi-debug-commands":
             self.adb_cmd.adb("pull /data/lcdkit_result.txt .")
@@ -336,3 +357,20 @@ class Window(QtWidgets.QWidget):
                 result = rf.readlines()
                 for line in result:
                     self.ui.debug_window.append(line.strip())
+
+    def restore_code_(self, screen, fps, type_index):
+        self.adb_cmd.adb_shell(f'echo restore_cmd:{type_index} dsi:{screen} fps:{fps} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg')
+        MyLog.cout(self.ui.debug_window, f"store cmd type: {type_index} dsi:{screen} fps:{fps}")
+
+    def restore_code(self):
+        type_index = int(self.panel.current_cmd_type.split(':')[0])
+        self.restore_code_(self.panel.current_screen, self.panel.current_fps, type_index)
+
+    def restore_all_code(self):
+        cmd_num = len(self.panel.cmd_type_list)
+        for screen in range(self.panel.screen_num):
+            for fps in self.panel.fps_list:
+                for type_index in range(cmd_num):
+                    self.restore_code_(screen, fps, type_index)
+
+        

@@ -84,3 +84,6 @@ class ADBMonitor(QWidget):
     
     def adb(self, cmd):
         return subpro.getoutput(f'adb -s {self.adb_device} {cmd}')
+    
+    def adb_get_result(self):
+        return self.adb_shell(f"cat /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
