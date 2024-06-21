@@ -229,7 +229,7 @@ class Window(QtWidgets.QWidget):
 
     @MyLog.print_function_name
     def refresh_screen_cmd_type(self):
-        self.adb_cmd.adb_shell(f"cat /sys/class/graphics/fb{self.panel.current_screen}/lcdkit_cmd_type")
+        self.adb_cmd.adb_shell(f"echo get_type_list > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
         self.adb_cmd.adb("pull /data/lcdkit_cmd_type.txt .")
         self.panel.cmd_type_list = self.panel.get_cmd_type_list("lcdkit_cmd_type.txt")
         self.panel.cmd_type_list_with_index = [f"{i}:{v}" for i, v in enumerate(self.panel.cmd_type_list)]
@@ -333,10 +333,10 @@ class Window(QtWidgets.QWidget):
         except Exception as e:
             MyLog.cout(self.ui.debug_window, "get code failed")
             logger.exception(e)
-        # try:
-        #     os.remove("lcdkit_code.txt")
-        # except Exception as e:
-        #     logger.exception(e)
+        try:
+            os.remove("lcdkit_code.txt")
+        except Exception as e:
+            logger.exception(e)
 
     def replace_code_(self, code, screen, fps, type_index, hs_mode):
         with open('lcd_param_config.xml', 'w') as wf:
@@ -360,7 +360,7 @@ class Window(QtWidgets.QWidget):
 
     def restore_code_(self, screen, fps, type_index):
         self.adb_cmd.adb_shell(f'echo restore_cmd:{type_index} dsi:{screen} fps:{fps} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg')
-        MyLog.cout(self.ui.debug_window, f"store cmd type: {type_index} dsi:{screen} fps:{fps}")
+        MyLog.cout(self.ui.debug_window, f"restore cmd type: {type_index} dsi:{screen} fps:{fps}")
 
     def restore_code(self):
         type_index = int(self.panel.current_cmd_type.split(':')[0])
