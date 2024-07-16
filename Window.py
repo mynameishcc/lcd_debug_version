@@ -160,7 +160,8 @@ class Window(QtWidgets.QWidget):
     def code_process(self, code_pack_flag, sync_te_flag):
         ret = ''
         text = self.ui.r_code.toPlainText()
-        text = text.split('\n')
+        # avoid empty line in text
+        text = [i.strip() for i in text.split('\n') if i.strip()]
         #print(text)
         for line_index, line in enumerate(text):
             line = line.split()

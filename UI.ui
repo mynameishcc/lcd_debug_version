@@ -588,6 +588,19 @@ p, li { white-space: pre-wrap; }
      </property>
     </widget>
    </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>20</y>
+      <width>211</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>咨询与投诉：黄昌畅/00018334</string>
+    </property>
+   </widget>
    <zorder>groupBox_4</zorder>
    <zorder>groupBox_3</zorder>
    <zorder>screen_index</zorder>
@@ -606,6 +619,7 @@ p, li { white-space: pre-wrap; }
    <zorder>label_4</zorder>
    <zorder>all_cmd_type_state</zorder>
    <zorder>groupBox_6</zorder>
+   <zorder>label_5</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
