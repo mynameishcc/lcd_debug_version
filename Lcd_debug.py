@@ -19,3 +19,4 @@ if __name__ == '__main__':
     sys.exit(app.exec_())
 
 # package: pyinstaller --onefile --windowed --noconsole .\Lcd_debug.py
+# git : git push -u origin main
