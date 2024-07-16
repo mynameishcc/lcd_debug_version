@@ -21,7 +21,7 @@ class VersionChecker(QWidget):
         self.get_version()
 
         # 发送 GET 请求获取版本信息
-        url = QUrl("https://raw.githubusercontent.com/mynameishcc/lcd_debug_version/main/version.txt")  # 替换为实际的版本检查URL
+        url = QUrl("https://raw.githubusercontent.com/mynameishcc/lcd_debug_version/main/version.py")  # 替换为实际的版本检查URL
         request = QNetworkRequest(url)
         self.manager.get(request)
 
