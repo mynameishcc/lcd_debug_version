@@ -1,4 +1,4 @@
-from MyLog import MyLog, logger
+from MyLog import logger
 
 class Panel(object):
     def __init__(self):

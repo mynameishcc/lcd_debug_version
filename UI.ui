@@ -248,10 +248,13 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>750</x>
-       <y>90</y>
+       <y>110</y>
        <width>93</width>
        <height>28</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>将左侧的code替换到手机，debug类型实时下发</string>
      </property>
      <property name="text">
       <string>替换code</string>
@@ -261,10 +264,13 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>750</x>
-       <y>40</y>
+       <y>30</y>
        <width>93</width>
        <height>28</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>将供应商的文件转换为dtsi格式</string>
      </property>
      <property name="text">
       <string>转换code</string>
@@ -274,7 +280,7 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>750</x>
-       <y>140</y>
+       <y>160</y>
        <width>93</width>
        <height>28</height>
       </rect>
@@ -286,23 +292,23 @@ p, li { white-space: pre-wrap; }
       <string>还原code</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="restore_all_code">
+    <widget class="QPushButton" name="generate_bat_button">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>
        <x>750</x>
-       <y>190</y>
+       <y>240</y>
        <width>93</width>
        <height>28</height>
       </rect>
      </property>
      <property name="toolTip">
-      <string>一键还原所有的code</string>
+      <string>生成bat可运行脚本范例</string>
      </property>
      <property name="text">
-      <string>一键还原</string>
+      <string>生成脚本</string>
      </property>
     </widget>
    </widget>
@@ -337,6 +343,9 @@ p, li { white-space: pre-wrap; }
        <height>28</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>选中某个文件，然后显示同目录下所有json文件</string>
+     </property>
      <property name="text">
       <string>打开文件夹</string>
      </property>
@@ -345,29 +354,16 @@ p, li { white-space: pre-wrap; }
      <property name="geometry">
       <rect>
        <x>860</x>
-       <y>150</y>
+       <y>140</y>
        <width>93</width>
        <height>28</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>将json文件显示在&quot;预览窗口&quot;</string>
      </property>
      <property name="text">
       <string>文件预览</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="import_file_button_2">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>860</x>
-       <y>210</y>
-       <width>93</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>一键替换</string>
      </property>
     </widget>
    </widget>
@@ -409,43 +405,14 @@ p, li { white-space: pre-wrap; }
        <height>28</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>将json文件中所有code下到手机里</string>
+     </property>
      <property name="text">
       <string>一键替换</string>
      </property>
     </widget>
     <widget class="QPushButton" name="save_file_button">
-     <property name="geometry">
-      <rect>
-       <x>860</x>
-       <y>180</y>
-       <width>93</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>文件保存</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="save_as_button">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>860</x>
-       <y>230</y>
-       <width>93</width>
-       <height>28</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>文件另存为</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="restore_code_in_json">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
      <property name="geometry">
       <rect>
        <x>860</x>
@@ -455,10 +422,10 @@ p, li { white-space: pre-wrap; }
       </rect>
      </property>
      <property name="toolTip">
-      <string>一键还原所有的code</string>
+      <string>将&quot;预览窗口&quot;文字保存为文件</string>
      </property>
      <property name="text">
-      <string>一键还原</string>
+      <string>文件保存</string>
      </property>
     </widget>
    </widget>
@@ -537,6 +504,9 @@ p, li { white-space: pre-wrap; }
        <height>22</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>debug指令在最下面，可以实时下发code到手机</string>
+     </property>
     </widget>
     <widget class="QLineEdit" name="search_lineedit">
      <property name="geometry">
@@ -546,6 +516,9 @@ p, li { white-space: pre-wrap; }
        <width>91</width>
        <height>21</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>搜索栏</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_3">
@@ -570,6 +543,9 @@ p, li { white-space: pre-wrap; }
        <height>28</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>在kernel日志里面打印这种cmd type日志</string>
+     </property>
      <property name="text">
       <string>enable</string>
      </property>
@@ -582,6 +558,9 @@ p, li { white-space: pre-wrap; }
        <width>93</width>
        <height>28</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string>不在kernel日志里面打印这种cmd type日志</string>
      </property>
      <property name="text">
       <string>disable</string>
@@ -599,6 +578,26 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="text">
      <string>咨询与投诉：黄昌畅/00018334</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>60</y>
+      <width>31</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;a href=&quot;https://w3.hihonor.com/weshare/community/#/topic-detail?topicId=963616788427227136&quot;&gt;教程&lt;/a&gt;
+</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::RichText</enum>
+    </property>
+    <property name="openExternalLinks">
+     <bool>true</bool>
     </property>
    </widget>
    <zorder>groupBox_4</zorder>
@@ -620,6 +619,7 @@ p, li { white-space: pre-wrap; }
    <zorder>all_cmd_type_state</zorder>
    <zorder>groupBox_6</zorder>
    <zorder>label_5</zorder>
+   <zorder>label_7</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

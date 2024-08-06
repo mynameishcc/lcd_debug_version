@@ -1,6 +1,6 @@
 import subprocess as subpro
 
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel
+from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import QThread, pyqtSignal
 
 from MyLog import MyLog, logger
@@ -37,6 +37,7 @@ class ADBMonitor(QWidget):
         super().__init__()
         self.adb_device = ''
         self.current_devices = []
+        self.code_limit = 8000
 
         #启动后台线程
         self.monitor_thread = ADBMonitorThread()
@@ -83,6 +84,7 @@ class ADBMonitor(QWidget):
         return subpro.getoutput(str)
     
     def adb(self, cmd):
+        logger.info(cmd)
         return subpro.getoutput(f'adb -s {self.adb_device} {cmd}')
     
     def adb_get_result(self):

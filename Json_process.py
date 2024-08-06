@@ -81,10 +81,12 @@ class Json_process(object):
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getSaveFileName(win, "save file", "", "JSON Files (*.json)", options=options)
         if fileName:
+            if not fileName.endswith('.json'):
+                fileName += '.json'
             # 用户选择了文件，写入内容
             with open(fileName, 'w') as wf:
                 json.dump(self.data, wf, indent=4)
-        MyLog.cout(self.win.ui.debug_window, "save file successfully")
+        MyLog.cout(self.win.ui.debug_window, f"save file {fileName} successfully")
 
     def get_data_dic_data_from_preview_window(self):
         ret = None
@@ -125,4 +127,28 @@ class Json_process(object):
         self.win.ui.preview_window.clear()
         json_string_pretty = json.dumps(self.data, indent=4)
         self.win.ui.preview_window.append(json_string_pretty)
+
+    def remove(self):
+        self.data = self.get_data_dic_data_from_preview_window()
+        if self.data is None:
+            return
+        panel = "panel" + self.win.panel.current_screen
+        if panel not in self.data:
+            return
+        fps = "fps" + self.win.panel.current_fps
+        if fps not in self.data[panel]:
+            return
+
+        cmd_type = self.win.panel.current_cmd_type
+        if cmd_type not in self.data[panel][fps]:
+            return
         
+        del self.data[panel][fps][cmd_type]
+        if len(self.data[panel][fps]) == 0:
+            del self.data[panel][fps]
+            if len(self.data[panel]) == 0:
+                del self.data[panel]
+
+        self.win.ui.preview_window.clear()
+        json_string_pretty = json.dumps(self.data, indent=4) if len(self.data) != 0 else ""
+        self.win.ui.preview_window.append(json_string_pretty)

@@ -3,7 +3,7 @@ import inspect
 import sys
 import os
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtGui import QStandardItem, QStandardItemModel
 
@@ -47,7 +47,8 @@ class Window(QtWidgets.QWidget):
         self.ui.dump_code_enable.clicked.connect(self.dump_code_enable)
         self.ui.dump_code_disable.clicked.connect(self.dump_code_disable)
         self.ui.restore_code.clicked.connect(self.restore_code)
-        self.ui.restore_all_code.clicked.connect(self.restore_all_code)
+        #self.ui.restore_all_code.clicked.connect(self.restore_all_code)
+        self.ui.generate_bat_button.clicked.connect(self.generate_bat)
         #self.redirect_stdout()
 
         self.adb_cmd = adb_cmd
@@ -82,12 +83,57 @@ class Window(QtWidgets.QWidget):
 
         self.MainWindow.show()
 
+    def generate_bat_(self, code, screen, fps, type, hs_mode):
+        # 弹出文件夹选择对话框
+        options = QFileDialog.Options()
+        # 不使用系统自带的对话框
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getSaveFileName(self, "save file", "", "Batch Files (*.bat)", options=options)
+        if fileName:
+            # 用户选择了文件，写入内容
+            if not fileName.endswith('.bat'):
+                fileName += '.bat'
+            code_segment = 0
+            code_line = 0
+            total_len = 0
+            cmd_len = len(f'echo set_param_config:{type} dsi:{screen} fps:{fps} hs_mode:{hs_mode} last_batch:1 cmd: > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg')
+            code = [i.strip() for i in code.split('\n') if i]
+            with open(fileName, 'w') as f:
+                f.write('@adb shell "mount -t debugfs none /d"\n')
+                f.write("\n")
+                while code_line < len(code):
+                    f.write(f'@set code_segment{code_segment}=')
+                    while code_line < len(code) and total_len < self.adb_cmd.code_limit:
+                        total_len += len(code[code_line]) + 1 # 1 for blank space
+                        if (total_len < self.adb_cmd.code_limit):
+                            f.write("^\n")
+                            f.write(f"{code[code_line]} ")
+                        code_line += 1
+                    if total_len >= self.adb_cmd.code_limit:
+                        code_line -= 1
+                    total_len = 0
+                    code_segment += 1
+                    f.write("\n\n")
+
+                for i in range(code_segment):
+                    f.write(f'adb shell "echo set_param_config:{type} dsi:{screen} fps:{fps} hs_mode:{hs_mode} last_batch:{1 if i == code_segment - 1 else 0} cmd:%code_segment{i}% > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg"\n')
+                f.write(f'@adb shell "cat /sys/kernel/debug/lcd-dbg/lcd_kit_dbg"\n')
+                f.write("@pause")
+            MyLog.cout(self.ui.debug_window, f"save file {fileName} successfully")
+
+    def generate_bat(self):
+        r_code = self.ui.r_code.toPlainText()
+        hs_mode = 1 if self.ui.hs_mode.isChecked() else 0
+        type_str = self.panel.current_cmd_type.split(':')[1]
+
+        self.generate_bat_(r_code, self.panel.current_screen, self.panel.current_fps, type_str, hs_mode)
+
     def dump_code_enable_(self, enable):
         if enable and not self.ui.enable_debug_log_checkbox.isChecked():
             MyLog.cout(self.ui.debug_window, 'warning: please check "开启debug日志"')
         if self.panel.current_cmd_type:
-            type_index = int(self.panel.current_cmd_type.split(':')[0])
-            self.adb_cmd.adb_shell(f"echo dump_cmd_type:{type_index} enable:{enable} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
+            type_str = self.panel.current_cmd_type.split(':')[1]
+            self.adb_cmd.adb_shell(f"echo dump_cmd_type:{type_str} enable:{enable} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
             MyLog.cout(self.ui.debug_window, f'{"enable" if enable else "disable"} {self.panel.current_cmd_type}')
         else:
             MyLog.cout(self.ui.debug_window, 'cmd type error')
@@ -109,7 +155,6 @@ class Window(QtWidgets.QWidget):
         option |= QFileDialog.DontUseNativeDialog
         filePath, _ = QFileDialog.getOpenFileName(self, "Select a JSON File", "", "JSON Files (*.json)", options=option)
         self.json_pro.open_dir(filePath)
-
 
     def json_to_code(self):
         self.json_pro.json_to_code()
@@ -313,19 +358,19 @@ class Window(QtWidgets.QWidget):
         self.check_panel_state()
         r_code = self.ui.r_code.toPlainText()
         hs_mode = 1 if self.ui.hs_mode.isChecked() else 0
-        type_index = int(self.panel.current_cmd_type.split(':')[0])
+        type_str = self.panel.current_cmd_type.split(':')[1]
 
-        self.replace_code_(r_code, self.panel.current_screen, self.panel.current_fps, type_index, hs_mode)
+        self.replace_code_(r_code, self.panel.current_screen, self.panel.current_fps, type_str, hs_mode)
 
         self.json_pro.update(r_code)
 
     def get_code(self):
         self.check_panel_state()
-        type_index = int(self.panel.current_cmd_type.split(':')[0])
+        type_str = self.panel.current_cmd_type.split(':')[1]
         screen = self.panel.current_screen
         fps = self.panel.current_fps
 
-        self.adb_cmd.adb_shell(f"echo get_cmd:{type_index} dsi:{screen} fps:{fps} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
+        self.adb_cmd.adb_shell(f"echo get_cmd:{type_str} dsi:{screen} fps:{fps} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
         self.adb_cmd.adb("pull /data/lcdkit_code.txt .")
         self.adb_cmd.adb_shell("rm -rf /data/lcdkit_code.txt")
 
@@ -345,33 +390,47 @@ class Window(QtWidgets.QWidget):
         except Exception as e:
             logger.exception(e)
 
-    def replace_code_(self, code, screen, fps, type_index, hs_mode):
-        with open('lcd_param_config.xml', 'w') as wf:
-            wf.write("<PanelCommand>\n")
-            wf.write(code)
-            wf.write("\n")
-            wf.write("</PanelCommand>")
-        self.adb_cmd.adb('push lcd_param_config.xml /data/')
-        self.adb_cmd.adb_shell(f'echo set_param_config:{type_index} dsi:{screen} fps:{fps} hs_mode:{hs_mode} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg')
-        MyLog.cout(self.ui.debug_window, f"replace cmd type: {type_index} dsi:{screen} fps:{fps} hs_mode:{hs_mode}")
+    def replace_code_(self, code, screen, fps, type_str, hs_mode):
+        # with open('lcd_param_config.xml', 'w') as wf:
+        #     wf.write("<PanelCommand>\n")
+        #     wf.write(code)
+        #     wf.write("\n")
+        #     wf.write("</PanelCommand>")
+        #self.adb_cmd.adb('push lcd_param_config.xml /data/')
+        code = ' '.join(code.split('\n'))
+        index = 0
+        cmd_len = len(f'echo set_param_config:{type_str} dsi:{screen} fps:{fps} hs_mode:{hs_mode} last_batch:1 cmd: > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg')
+        code_len = self.adb_cmd.code_limit - cmd_len
+        while index < len(code):
+            end = min(len(code), index + code_len)
+            code_tmp = code[index:end]
+            index = end
+            print(index, len(code))
+            self.adb_cmd.adb_shell(f'echo set_param_config:{type_str} dsi:{screen} fps:{fps} hs_mode:{hs_mode} last_batch:{1 if index == len(code) else 0} cmd:{code_tmp} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg')
+        MyLog.cout(self.ui.debug_window, f"replace cmd type: {type_str} dsi:{screen} fps:{fps} hs_mode:{hs_mode}")
         ret = self.adb_cmd.adb_get_result()
         if ret.strip():
             MyLog.cout(self.ui.debug_window, ret)
         #print(self.panel.cmd_type_list[type_index])
-        if self.panel.cmd_type_list[type_index] == "qcom,mdss-dsi-debug-commands":
-            self.adb_cmd.adb("pull /data/lcdkit_result.txt .")
-            with open("lcdkit_result.txt", 'r') as rf:
-                result = rf.readlines()
-                for line in result:
-                    self.ui.debug_window.append(line.strip())
+        # if type_str == "qcom,mdss-dsi-debug-commands":
+        #     self.adb_cmd.adb("pull /data/lcdkit_result.txt .")
+        #     try:
+        #         with open("lcdkit_result.txt", 'r') as rf:
+        #             result = rf.readlines()
+        #             for line in result:
+        #                 self.ui.debug_window.append(line.strip())
+        #     except Exception as e:
+        #         logger.exception(e)
+        #         MyLog.cout(self.ui.debug_window, f"open lcdkit_result.txt failed")
 
     def restore_code_(self, screen, fps, type_index):
         self.adb_cmd.adb_shell(f'echo restore_cmd:{type_index} dsi:{screen} fps:{fps} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg')
+        self.json_pro.remove()
         MyLog.cout(self.ui.debug_window, f"restore cmd type: {type_index} dsi:{screen} fps:{fps}")
 
     def restore_code(self):
-        type_index = int(self.panel.current_cmd_type.split(':')[0])
-        self.restore_code_(self.panel.current_screen, self.panel.current_fps, type_index)
+        type_str = self.panel.current_cmd_type.split(':')[1]
+        self.restore_code_(self.panel.current_screen, self.panel.current_fps, type_str)
 
     def restore_all_code(self):
         cmd_num = len(self.panel.cmd_type_list)

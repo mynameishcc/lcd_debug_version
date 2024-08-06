@@ -1,6 +1,6 @@
-from PyQt5.QtCore import QUrl, Qt, QObject
+from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
-from PyQt5.QtWidgets import QApplication, QLabel, QVBoxLayout, QWidget, QMessageBox
+from PyQt5.QtWidgets import QWidget, QMessageBox
 
 from MyLog import logger
 import version
