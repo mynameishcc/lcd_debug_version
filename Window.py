@@ -123,10 +123,19 @@ class Window(QtWidgets.QWidget):
 
     def generate_bat(self):
         r_code = self.ui.r_code.toPlainText()
-        hs_mode = 1 if self.ui.hs_mode.isChecked() else 0
-        type_str = self.panel.current_cmd_type.split(':')[1]
+        print('hcc', self.adb_cmd.adb_device)
+        if self.adb_cmd.adb_device:
+            hs_mode = 1 if self.ui.hs_mode.isChecked() else 0
+            type_str = self.panel.current_cmd_type.split(':')[1]
+            screen = self.panel.current_screen
+            fps = self.panel.current_fps
+        else:
+            hs_mode = 0
+            type_str = "qcom,mdss-dsi-debug-commands"
+            screen = 0
+            fps = 60
 
-        self.generate_bat_(r_code, self.panel.current_screen, self.panel.current_fps, type_str, hs_mode)
+        self.generate_bat_(r_code, screen, fps, type_str, hs_mode)
 
     def dump_code_enable_(self, enable):
         if enable and not self.ui.enable_debug_log_checkbox.isChecked():
@@ -281,14 +290,23 @@ class Window(QtWidgets.QWidget):
 
     @MyLog.print_function_name
     def refresh_screen_cmd_type(self):
-        self.adb_cmd.adb_shell(f"echo get_type_list > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
-        self.adb_cmd.adb("pull /data/lcdkit_cmd_type.txt .")
-        self.panel.cmd_type_list = self.panel.get_cmd_type_list("lcdkit_cmd_type.txt")
-        self.panel.cmd_type_list_with_index = [f"{i}:{v}" for i, v in enumerate(self.panel.cmd_type_list)]
-        try:
-            os.remove("lcdkit_cmd_type.txt")
-        except Exception as e:
-            logger.exception(e)
+        self.panel.cmd_type_list = []
+        self.panel.cmd_type_list_with_index = []
+        if self.adb_cmd.adb_device:
+            cmd_type_list = ''
+            self.adb_cmd.adb_shell(f"echo get_type_list > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
+            try_cnt = 0
+            while True:
+                try_cnt += 1
+                ret = self.adb_cmd.adb_shell(f"cat /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
+                cmd_type_list += ret
+                print(ret[-3:])
+                if ret[-3:] == "END" or try_cnt >= 20:
+                    if (try_cnt >= 20):
+                        logger.info("cat /sys/kernel/debug/lcd-dbg/lcd_kit_dbg too many times")
+                    break
+            self.panel.cmd_type_list = self.panel.get_cmd_type_list(cmd_type_list)
+            self.panel.cmd_type_list_with_index = [f"{i}:{v}" for i, v in enumerate(self.panel.cmd_type_list)]
 
         self.update_ui_cmd_type_list()
 
@@ -371,24 +389,23 @@ class Window(QtWidgets.QWidget):
         fps = self.panel.current_fps
 
         self.adb_cmd.adb_shell(f"echo get_cmd:{type_str} dsi:{screen} fps:{fps} > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
-        self.adb_cmd.adb("pull /data/lcdkit_code.txt .")
-        self.adb_cmd.adb_shell("rm -rf /data/lcdkit_code.txt")
+        try_cnt = 0
+        read_result = ''
+        while True:
+            try_cnt += 1
+            ret = self.adb_cmd.adb_shell(f"cat /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
+            read_result += ret
+            print(ret)
+            if ret[-3:] == "END" or try_cnt >= 20:
+                if (try_cnt >= 20):
+                    logger.info("cat /sys/kernel/debug/lcd-dbg/lcd_kit_dbg too many times")
+                break
 
-        try:
-            with open("lcdkit_code.txt", 'r') as rf:
-                code = rf.readlines()
-                code = ''.join(code)
-                MyLog.cout(self.ui.debug_window, '\n' + code)
-            # self.ui.debug_window.append("\n")
-            # for line in code:
-            #     self.ui.debug_window.append(line)
-        except Exception as e:
-            MyLog.cout(self.ui.debug_window, "get code failed")
-            logger.exception(e)
-        try:
-            os.remove("lcdkit_code.txt")
-        except Exception as e:
-            logger.exception(e)
+        read_result = read_result[:-3]
+        if read_result:
+            MyLog.cout(self.ui.debug_window, '\n' + read_result)
+        else:
+            MyLog.cout(self.ui.debug_window, 'get code failed')
 
     def replace_code_(self, code, screen, fps, type_str, hs_mode):
         # with open('lcd_param_config.xml', 'w') as wf:

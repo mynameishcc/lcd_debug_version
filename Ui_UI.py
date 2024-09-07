@@ -185,6 +185,7 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "屏幕"))
         self.label_2.setText(_translate("MainWindow", "帧率"))
         self.hs_mode.setText(_translate("MainWindow", "hs_mode"))
+        self.code_pack.setToolTip(_translate("MainWindow", "只有勾选框状态改变的时候才生效，只作用于替换框"))
         self.code_pack.setText(_translate("MainWindow", "打包"))
         self.sync_te.setText(_translate("MainWindow", "sycn TE"))
         self.checkBox_4.setText(_translate("MainWindow", "全帧率替换"))

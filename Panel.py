@@ -18,14 +18,11 @@ class Panel(object):
                 return data
         return []
     
-    def get_cmd_type_list(self, file):
-        ret = []
-        try:
-            with open(file, 'r') as rf:
-                ret = rf.readlines()
-        except Exception as e:
-            logger.exception(e)
-        return [cmd_type.strip() for cmd_type in ret if cmd_type.strip()] # 去掉末尾的'\n'
+    def get_cmd_type_list(self, cmd_type_list):
+        cmd_type_list = cmd_type_list[:-3] # 去掉最后面的'END'
+        cmd_type_list = cmd_type_list.split('\n')
+
+        return [cmd_type.strip() for cmd_type in cmd_type_list if cmd_type.strip()] # 去掉末尾的'\n'
 
     def get_panel_tips(self, index):
         dic = {

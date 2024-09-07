@@ -63,6 +63,7 @@ class ADBMonitor(QWidget):
     def refresh_device_list_(self, devices):
         self.win.clear_combo_box(self.win.ui.adb_devices_Info)
         if not devices:
+            self.adb_device = ''
             MyLog.cout(self.win.ui.debug_window,'no devices connected')
         else:
             for adb_device in devices:

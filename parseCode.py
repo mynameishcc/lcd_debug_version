@@ -1,8 +1,3 @@
-""" 
-目前缺陷：
-    1. 不识别 0x06
-"""
-
 from cmath import inf
 
 def judgeTypeHead(codes):
@@ -23,7 +18,7 @@ def deleteComment(lines):
 
 # 这里是不是有漏洞？ hex最末尾是'F'，不是'z'，fix me
 def isHexChar(ch):
-    return ch.isdigit() or (ch >= 'A' and ch <= 'Z')
+    return ch.isdigit() or (ch >= 'A' and ch <= 'F')
 
 def parseCodeHex(lines):
     ret = []
@@ -55,7 +50,8 @@ def parseCodeHex(lines):
             index += 4
 
         if tmp: #修复了空行也有东西输出的问题
-            tmp.append("00") # 最后一个是延时
+            tmp.append("00") # 倒数第二个是延时
+            tmp.append('read' if 'REGR' in line else 'write')
             ret.append(tmp)
 
     return ret
@@ -86,11 +82,16 @@ def parseCode(lines):
             continue
         tmp = []
         while any(line.find(ch, index) != -1 for ch in letters):
+            #找到第一个十六进制数
             bigOne = inf
             for ch in letters:
                 a = line.find(ch, index)
                 bigOne = min(bigOne, a if a != -1 else bigOne)
             index = bigOne
+            # 场景1：REGR(0A) 会识别到 'E'，从而识别到'EG'，后面逻辑无法转换为十六进制数
+            if index + 1 < len(line) and line[index + 1] not in letters:
+                index += 2
+                continue
             # 修复了0x后面只有一位数的问题
             if index + 2 <= len(line):
                 s = line[index : index + 2] if isHexChar(line[index + 1]) else line[index : index + 1]
@@ -103,19 +104,30 @@ def parseCode(lines):
             index += 2
 
         if tmp: #修复了空行也有东西输出的问题
-            tmp.append("00") # 最后一个是延时
+            tmp.append("00") # 倒数第二个是延时
+            tmp.append('read' if 'REGR' in line else 'write')
             ret.append(tmp)
 
     return ret
 
-def generateResult(codes, typeHead):
+def generateResult(codes, isTypeHead):
     ret = ""
     for code in codes:
-        if typeHead:
+        # code is like ['15', '01', '02', '00'], the last data is delay time
+        print('hcc', code)
+        typeHead = None
+        if isTypeHead:
+            typeHead = code[0]
             del code[0]
-        myDelay = code[-1]
+        myDelay = code[-2]
+        del code[-2]
+        read_or_write = code[-1]
         del code[-1]
-        type = '39' if len(code) >2 else '15' if len(code) == 2 else '05'
+        type = '39' if len(code) > 2 else '15' if len(code) == 2 else '05'
+        # 场景1：REGR(0A) -> 06 01 00 00 00 00 01 0A
+        # 场景2：06 0A -> 06 01 00 00 00 00 01 0A
+        if read_or_write == "read" or (isTypeHead and typeHead == '06'):
+            type = '06'
         cntHigh = len(code) >> 8
         cntLow = len(code) & 0xFF
         code.insert(0, format(cntLow, '0>2X'))
