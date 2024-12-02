@@ -32,7 +32,7 @@ def parseCodeHex(lines):
                 bigOne = min(bigOne, a if a != -1 else bigOne)
             myDelay = findNext(line, bigOne)
             if ret and ret[-1]:
-                ret[-1][-1] = myDelay
+                ret[-1][-2] = myDelay
             continue
         
         tmp = []
@@ -78,7 +78,7 @@ def parseCode(lines):
                 bigOne = min(bigOne, a if a != -1 else bigOne)
             myDelay = findNext(line, bigOne)
             if ret and ret[-1]:
-                ret[-1][-1] = myDelay
+                ret[-1][-2] = myDelay
             continue
         tmp = []
         while any(line.find(ch, index) != -1 for ch in letters):

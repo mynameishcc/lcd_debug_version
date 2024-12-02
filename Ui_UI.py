@@ -37,7 +37,7 @@ class Ui_MainWindow(object):
         self.code_pack.setGeometry(QtCore.QRect(480, 120, 91, 19))
         self.code_pack.setObjectName("code_pack")
         self.sync_te = QtWidgets.QCheckBox(self.centralwidget)
-        self.sync_te.setEnabled(False)
+        self.sync_te.setEnabled(True)
         self.sync_te.setGeometry(QtCore.QRect(560, 120, 91, 19))
         self.sync_te.setInputMethodHints(QtCore.Qt.ImhNone)
         self.sync_te.setCheckable(True)

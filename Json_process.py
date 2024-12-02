@@ -34,6 +34,9 @@ class Json_process(object):
     
     def cmd_type_lable_to_index(self, cmd_type):
         return int(cmd_type.split(':')[0])
+    
+    def cmd_type_lable_to_lable(self, cmd_type):
+        return int(cmd_type.split(':')[1])
 
     def json_to_code(self):
         self.data = self.get_data_dic_data_from_preview_window()
@@ -42,7 +45,7 @@ class Json_process(object):
             for fps, _ in _.items():
                 fps = self.fps_label_to_index(fps)
                 for cmd_type, data in _.items():
-                    cmd_type = self.cmd_type_lable_to_index(cmd_type)
+                    cmd_type = self.cmd_type_lable_to_lable(cmd_type)
                     code = '\n'.join(data[:-1])
                     hs_mode = 1 if data[-1] == "hs_mode" else 0
                     self.win.replace_code_(code, panel, fps, cmd_type, hs_mode)
@@ -120,7 +123,7 @@ class Json_process(object):
 
         self.data[panel][fps][cmd_type] = list()
         self.data[panel][fps] = dict(sorted(self.data[panel][fps].items(), key=lambda x:int(self.cmd_type_lable_to_index(x[0]))))
-        self.data[panel][fps][cmd_type] += r_code.strip().split('\n')
+        self.data[panel][fps][cmd_type] += r_code
         hs_mode = "hs_mode" if self.win.ui.hs_mode.isChecked() else "lp_mode"
         self.data[panel][fps][cmd_type].append(hs_mode)
 

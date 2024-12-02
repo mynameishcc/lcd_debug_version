@@ -1,5 +1,4 @@
 #coding = 'utf-8'
-# 代码和人，一个能跑就行
 import sys
 
 from PyQt5 import QtWidgets

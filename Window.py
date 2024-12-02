@@ -74,14 +74,14 @@ class Window(QtWidgets.QWidget):
         json_pro.win = self
 
         json_pro.json_file_init()
-  
-        self.version_checker = VersionChecker(self.MainWindow)
-        # 检查版本更新
-        self.version_checker.check_for_updates()    
 
         logger.info('end init\n')
 
         self.MainWindow.show()
+
+        self.version_checker = VersionChecker(self.MainWindow)
+        # 检查版本更新
+        self.version_checker.check_for_updates() 
 
     def generate_bat_(self, code, screen, fps, type, hs_mode):
         # 弹出文件夹选择对话框
@@ -156,7 +156,10 @@ class Window(QtWidgets.QWidget):
     def transform_code(self):
         text = self.ui.r_code.toPlainText()
         text = text.split('\n')
-        MyLog.cout(self.ui.debug_window, '\n' + lines2codes(text))
+        result = lines2codes(text)
+        if self.ui.code_pack.isChecked():
+            result = self.code_process(result, True, self.ui.sync_te.isChecked())
+        MyLog.cout(self.ui.debug_window, '\n' + result)
 
     def open_dir(self):
         # 弹出文件夹选择对话框
@@ -187,7 +190,7 @@ class Window(QtWidgets.QWidget):
             if text:
                 MyLog.cout(self.ui.debug_window, "change current cmd type to " + text)
             else:
-                MyLog.cout(self.ui.debug_window, "no cmd type deteced")
+                MyLog.cout(self.ui.debug_window, "no cmd type detected")
 
     def on_all_cmd_type_state_change(self, text):
         MyLog.cout(self.ui.debug_window, f"set all cmd type state to {text}")
@@ -217,42 +220,48 @@ class Window(QtWidgets.QWidget):
             pass
 
     @MyLog.print_function_name
-    def code_process(self, code_pack_flag, sync_te_flag):
+    def code_process(self, text, code_pack_flag, sync_te_flag):
         ret = ''
-        text = self.ui.r_code.toPlainText()
+
         # avoid empty line in text
         text = [i.strip() for i in text.split('\n') if i.strip()]
         #print(text)
         for line_index, line in enumerate(text):
             line = line.split()
+            delay_time = int(line[4], base=16)
             for i, j in enumerate(line):
-                if i == 3 and line_index != len(text) - 1:
+                if i == 3:
+                #if i == 3 and line_index != len(text) - 1:
                     j = int(j, base=16)
-                    if code_pack_flag and line_index != len(text) - 1:
+                    #if code_pack_flag and delay_time == 0:
+                    if code_pack_flag and line_index != len(text) - 1 and delay_time == 0:
                         j |= 0x40
                         logger.info(j)
                     elif not code_pack_flag:
                         j &= ~0x40
                         logger.info(j)
-                    # if sync_te_flag and :
-                    #     j |= 0x20
-                    # else:
-                    #     j &= ~0x20
+                    if sync_te_flag and line_index == len(text) - 1:
+                        j |= 0x20
+                    else:
+                        j &= ~0x20
                     j = format(j, '0>2X')
                 ret += j
-                if i != len(line):
+                if (i + 1) != len(line):
                     ret += ' '
             if line_index != len(text) - 1:
                 ret += '\n'
-        self.ui.r_code.clear()
-        self.ui.r_code.append(ret)
+        return ret
+        #self.ui.r_code.clear()
+        #self.ui.r_code.append(ret)
 
     @MyLog.print_function_name
     def on_code_pack_change(self, state):
-        if state == QtCore.Qt.Checked:
-            self.code_process(True, self.ui.sync_te.isChecked())
-        else:
-            self.code_process(False, self.ui.sync_te.isChecked())
+        pass
+        # text = self.ui.r_code.toPlainText()
+        # if state == QtCore.Qt.Checked:
+        #     self.code_process(text, True, self.ui.sync_te.isChecked())
+        # else:
+        #     self.code_process(text, False, self.ui.sync_te.isChecked())
         #MyLog.cout(self.ui.debug_window, state)
 
     @MyLog.print_function_name
@@ -292,6 +301,7 @@ class Window(QtWidgets.QWidget):
     def refresh_screen_cmd_type(self):
         self.panel.cmd_type_list = []
         self.panel.cmd_type_list_with_index = []
+        isFileExist = True
         if self.adb_cmd.adb_device:
             cmd_type_list = ''
             self.adb_cmd.adb_shell(f"echo get_type_list > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
@@ -304,9 +314,11 @@ class Window(QtWidgets.QWidget):
                 if ret[-3:] == "END" or try_cnt >= 20:
                     if (try_cnt >= 20):
                         logger.info("cat /sys/kernel/debug/lcd-dbg/lcd_kit_dbg too many times")
+                        isFileExist = False
                     break
-            self.panel.cmd_type_list = self.panel.get_cmd_type_list(cmd_type_list)
-            self.panel.cmd_type_list_with_index = [f"{i}:{v}" for i, v in enumerate(self.panel.cmd_type_list)]
+            if isFileExist:
+                self.panel.cmd_type_list = self.panel.get_cmd_type_list(cmd_type_list)
+                self.panel.cmd_type_list_with_index = [f"{i}:{v}" for i, v in enumerate(self.panel.cmd_type_list)]
 
         self.update_ui_cmd_type_list()
 
@@ -371,10 +383,16 @@ class Window(QtWidgets.QWidget):
         sys.stdout = CustomOutput(sys.stdout, self.ui.debug_window)
         #sys.stderr = CustomOutput(sys.stderr, self.ui.debug_window)
 
+    def modify_code(self, r_code):
+        r_code = r_code.split('\n')
+        r_code = [i.strip() for i in r_code]
+        return r_code
+
     @MyLog.print_function_name
     def replace_code(self, *args, **kwargs):
         self.check_panel_state()
         r_code = self.ui.r_code.toPlainText()
+        r_code = self.modify_code(r_code)
         hs_mode = 1 if self.ui.hs_mode.isChecked() else 0
         type_str = self.panel.current_cmd_type.split(':')[1]
 
@@ -414,7 +432,9 @@ class Window(QtWidgets.QWidget):
         #     wf.write("\n")
         #     wf.write("</PanelCommand>")
         #self.adb_cmd.adb('push lcd_param_config.xml /data/')
-        code = ' '.join(code.split('\n'))
+        # code = code.split('\n')
+        # code = [i.strip() for i in code]
+        code = ' '.join(code)
         index = 0
         cmd_len = len(f'echo set_param_config:{type_str} dsi:{screen} fps:{fps} hs_mode:{hs_mode} last_batch:1 cmd: > /sys/kernel/debug/lcd-dbg/lcd_kit_dbg')
         code_len = self.adb_cmd.code_limit - cmd_len
