@@ -223,23 +223,34 @@ class Window(QtWidgets.QWidget):
     def code_process(self, text, code_pack_flag, sync_te_flag):
         ret = ''
 
+        pack_bytes = 0
         # avoid empty line in text
         text = [i.strip() for i in text.split('\n') if i.strip()]
         #print(text)
         for line_index, line in enumerate(text):
             line = line.split()
             delay_time = int(line[4], base=16)
+            current_bytes = (int(line[5], base=16) << 8) | (int(line[6], base=16))
+            logger.info(f"current_bytes:{current_bytes}")
+            pack_bytes += current_bytes
+            if (line_index != len(text) - 1):
+                next_line = text[line_index + 1].split()
+                next_bytes = (int(next_line[5], base=16) << 8) | (int(next_line[6], base=16))
             for i, j in enumerate(line):
                 if i == 3:
                 #if i == 3 and line_index != len(text) - 1:
                     j = int(j, base=16)
                     #if code_pack_flag and delay_time == 0:
-                    if code_pack_flag and line_index != len(text) - 1 and delay_time == 0:
-                        j |= 0x40
-                        logger.info(j)
-                    elif not code_pack_flag:
+                    # 1024可能是最大的打包极限字节数：
+                    logger.info(f"pack_bytes:{pack_bytes} next_bytes:{next_bytes}")
+                    if code_pack_flag and line_index != len(text) - 1 and delay_time == 0 and \
+                        pack_bytes + next_bytes <= 700:
+                            j |= 0x40
+                            logger.info(j)
+                    else:
                         j &= ~0x40
                         logger.info(j)
+                        pack_bytes = 0
                     if sync_te_flag and line_index == len(text) - 1:
                         j |= 0x20
                     else:
@@ -362,6 +373,11 @@ class Window(QtWidgets.QWidget):
         for cmdline in ret:
             if "msm_drm.dsi_display" in cmdline:
                 self.panel.screen_num += 1
+
+        # cmdline里面没有参数
+        if self.panel.screen_num == 0:
+            ret = self.adb_cmd.adb_shell("ls /sys/class/graphics/")
+            self.panel.screen_num = len(ret.split('\n'))
 
         self.ui.screen_index.blockSignals(True)
         model = QStandardItemModel()

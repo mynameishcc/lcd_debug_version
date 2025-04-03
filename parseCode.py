@@ -114,7 +114,7 @@ def generateResult(codes, isTypeHead):
     ret = ""
     for code in codes:
         # code is like ['15', '01', '02', '00'], the last data is delay time
-        print('hcc', code)
+        #print('hcc', code)
         typeHead = None
         if isTypeHead:
             typeHead = code[0]

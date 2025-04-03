@@ -36,7 +36,7 @@ class Json_process(object):
         return int(cmd_type.split(':')[0])
     
     def cmd_type_lable_to_lable(self, cmd_type):
-        return int(cmd_type.split(':')[1])
+        return cmd_type.split(':')[1]
 
     def json_to_code(self):
         self.data = self.get_data_dic_data_from_preview_window()
@@ -46,9 +46,10 @@ class Json_process(object):
                 fps = self.fps_label_to_index(fps)
                 for cmd_type, data in _.items():
                     cmd_type = self.cmd_type_lable_to_lable(cmd_type)
-                    code = '\n'.join(data[:-1])
+                    #code = '\n'.join(data[:-1])
+                    print("json_to_code", data[:-1])
                     hs_mode = 1 if data[-1] == "hs_mode" else 0
-                    self.win.replace_code_(code, panel, fps, cmd_type, hs_mode)
+                    self.win.replace_code_(data[:-1], panel, fps, cmd_type, hs_mode)
 
     def import_file(self):
         # 获取当前选中的项
