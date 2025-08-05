@@ -19,7 +19,7 @@ class VersionChecker(QWidget):
         self.get_version()
 
         # 读取共享文件中的版本信息
-        shared_file_path = r"\\10.167.19.50\lcd_debug\version.py"
+        shared_file_path = r"\\10.167.26.86\lcd_debug\version.py"
         try:
             with open(shared_file_path, 'r') as file:
                 response = file.read()

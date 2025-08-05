@@ -233,6 +233,7 @@ class Window(QtWidgets.QWidget):
             current_bytes = (int(line[5], base=16) << 8) | (int(line[6], base=16))
             logger.info(f"current_bytes:{current_bytes}")
             pack_bytes += current_bytes
+            next_bytes = 0
             if (line_index != len(text) - 1):
                 next_line = text[line_index + 1].split()
                 next_bytes = (int(next_line[5], base=16) << 8) | (int(next_line[6], base=16))
@@ -429,7 +430,7 @@ class Window(QtWidgets.QWidget):
             try_cnt += 1
             ret = self.adb_cmd.adb_shell(f"cat /sys/kernel/debug/lcd-dbg/lcd_kit_dbg")
             read_result += ret
-            print(ret)
+            print(repr(ret))
             if ret[-3:] == "END" or try_cnt >= 20:
                 if (try_cnt >= 20):
                     logger.info("cat /sys/kernel/debug/lcd-dbg/lcd_kit_dbg too many times")
